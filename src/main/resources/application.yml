@@ -17,7 +17,7 @@ spring:
 
 logging:
   level:
-    ROOT: debug
+    ROOT: error
     org:
       hibernate:
         type: trace
