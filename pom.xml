@@ -49,6 +49,11 @@
         <!--</dependency>-->
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
@@ -118,8 +123,8 @@
                             <attributes>
                                 <snippets>${snippetsDirectory}</snippets>
                             </attributes>
-                            <sourceDirectory>src/docs/asciidocs</sourceDirectory>
-                            <outputDirectory>target/generated-docs</outputDirectory>
+                            <outputDirectory>src/main/resources/static</outputDirectory>
+                            <sourceDirectory>doc/api-document-template</sourceDirectory>
                         </configuration>
                     </execution>
                 </executions>

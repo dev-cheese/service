@@ -15,7 +15,7 @@ import javax.persistence.Embeddable;
 public class Email {
 
 
-    @javax.validation.constraints.Email
+    @org.hibernate.validator.constraints.Email
     @Column(name = "email")
     private String value;
 

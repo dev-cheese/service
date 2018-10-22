@@ -1,18 +1,20 @@
 package cheese.spring.service.account;
 
 import cheese.spring.service.dto.SignUpDto;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.UUID;
 
-@RestController("/accounts")
+@RestController
+@RequestMapping("accounts")
 public class AccountController {
 
 
-    @PostMapping
+    @RequestMapping(method = RequestMethod.POST)
     public Account signUp(@Valid @RequestBody SignUpDto.Req dto) {
 
         return Account.builder()
