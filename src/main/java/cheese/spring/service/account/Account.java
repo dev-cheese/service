@@ -1,12 +1,12 @@
 package cheese.spring.service.account;
 
+import cheese.spring.service.model.Email;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Table(name = "account")
 @Entity
@@ -14,7 +14,19 @@ import javax.persistence.Table;
 @Getter
 public class Account {
 
-    @Id
-    private String id;
+    @EmbeddedId
+    private AccountId id;
 
+    @Embedded
+    @AttributeOverride(
+            name = "value",
+            column = @Column(name = "email", nullable = false, updatable = false, unique = true)
+    )
+    private Email email;
+
+    @Builder
+    public Account(AccountId id, Email email) {
+        this.id = id;
+        this.email = email;
+    }
 }
