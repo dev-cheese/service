@@ -69,3 +69,6 @@ include::{snippets}/account-controller-test/sign-up_성공하면_200리턴/http-
 
 ==== Response
 include::{snippets}/account-controller-test/sign-up_성공하면_200리턴/http-response.adoc[]
+
+==== Curl
+include::{snippets}/account-controller-test/sign-up_성공하면_200리턴/curl-request.adoc[]
