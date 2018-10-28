@@ -68,7 +68,7 @@ public class AccountControllerTest {
     private String signUp() {
         return "{\n" +
                 "\t\"email\": {\n" +
-                "\t\t\"value\": \"cheese10yyn@gamcil.com\"\n" +
+                "\t\t\"value\": \"cheese10yun@gmail.com\"\n" +
                 "\t}\n" +
                 "}";
     }

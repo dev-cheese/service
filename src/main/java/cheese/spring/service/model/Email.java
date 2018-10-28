@@ -2,7 +2,6 @@ package cheese.spring.service.model;
 
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +18,6 @@ public class Email {
     @Column(name = "email")
     private String value;
 
-    @Builder
     public Email(String value) {
         this.value = value;
     }
