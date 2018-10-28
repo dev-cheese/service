@@ -1,5 +1,6 @@
 package cheese.spring.service.account;
 
+import cheese.spring.service.dto.SignUpDto;
 import cheese.spring.service.model.Email;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Table(name = "account")
 @Entity
@@ -25,8 +27,14 @@ public class Account {
     private Email email;
 
     @Builder
-    public Account(AccountId id, Email email) {
-        this.id = id;
+    private Account(Email email) {
+        this.id = new AccountId(UUID.randomUUID().toString());
         this.email = email;
+    }
+
+    public static Account signUp(SignUpDto.Req dto) {
+        return Account.builder()
+                .email(dto.getEmail())
+                .build();
     }
 }
