@@ -72,3 +72,8 @@ include::{snippets}/account-controller-test/sign-up_성공하면_200리턴/http-
 
 ==== Curl
 include::{snippets}/account-controller-test/sign-up_성공하면_200리턴/curl-request.adoc[]
+
+==== ETC
+include::{snippets}/account-controller-test/sign-up_성공하면_200리턴/httpie-request.adoc[]
+include::{snippets}/account-controller-test/sign-up_성공하면_200리턴/request-body.adoc[]
+include::{snippets}/account-controller-test/sign-up_성공하면_200리턴/response-body.adoc[]
