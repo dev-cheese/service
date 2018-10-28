@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,6 +17,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,19 +28,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AccountControllerTest {
 
     @Rule
-    public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
+    public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mockMvc;
+    private RestDocumentationResultHandler document;
 
     @Before
     public void setUp() {
 
+        this.document = document(
+                "{class-name}/{method-name}",
+                preprocessResponse(prettyPrint())
+        );
+
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
                 .apply(documentationConfiguration(this.restDocumentation))
-                .alwaysDo(document("{class-name}/{method-name}/"))
+                .alwaysDo(document)
                 .build();
     }
 
@@ -46,7 +55,7 @@ public class AccountControllerTest {
 
         final ResultActions resultActions = mockMvc.perform(post("/accounts")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(signup()))
+                .content(signUp()))
                 .andDo(print());
 
 
@@ -56,7 +65,7 @@ public class AccountControllerTest {
 
     }
 
-    private String signup() {
+    private String signUp() {
         return "{\n" +
                 "\t\"email\": {\n" +
                 "\t\t\"value\": \"cheese10yyn@gamcil.com\"\n" +
