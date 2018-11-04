@@ -1,6 +1,7 @@
 package cheese.spring.service.account;
 
 import cheese.spring.service.dto.SignUpDto;
+import cheese.spring.service.model.Date;
 import cheese.spring.service.model.Email;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,6 +27,9 @@ public class Account {
     )
     private Email email;
 
+    @Embedded
+    private Date date;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AccountStatus status;
@@ -35,6 +39,7 @@ public class Account {
         this.id = new AccountId(UUID.randomUUID().toString());
         this.email = email;
         this.status = AccountStatus.ACTIVE;
+        this.date = Date.now();
     }
 
     public static Account signUp(SignUpDto.Req dto) {
@@ -43,7 +48,8 @@ public class Account {
                 .build();
     }
 
-    public void doInactive() {
+    public Account doInactive() {
         this.status = AccountStatus.INACTIVE;
+        return this;
     }
 }
