@@ -17,8 +17,8 @@ public class AccountController {
     private final AccountHelperService accountHelperService;
 
     @GetMapping("/{email}")
-    public Account getAccount(@PathVariable String email) {
-        return accountHelperService.findByEmail(new Email(email));
+    public Account getAccount(@Valid Email email) {
+        return accountHelperService.findByEmail(email);
     }
 
     @PostMapping
