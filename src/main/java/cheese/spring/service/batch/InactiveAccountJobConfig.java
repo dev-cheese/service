@@ -1,7 +1,8 @@
 package cheese.spring.service.batch;
 
 import cheese.spring.service.account.Account;
-import cheese.spring.service.account.AccountHelperService;
+import cheese.spring.service.account.AccountRepository;
+import cheese.spring.service.account.AccountStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -14,20 +15,19 @@ import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
 @Configuration
 public class InactiveAccountJobConfig {
 
-    private final AccountHelperService accountHelperService;
-
+    private final AccountRepository accountRepository;
 
     @Bean
     public Job inactiveAccountJob(JobBuilderFactory jobBuilderFactory, Step inactiveJobStep) {
         return jobBuilderFactory
                 .get(BatchName.INACTIVE_ACCOUNT_JOB.name())
-                .preventRestart()
                 .start(inactiveJobStep)
                 .build();
     }
@@ -46,7 +46,10 @@ public class InactiveAccountJobConfig {
     @Bean
     @StepScope
     public ListItemReader<Account> inactiveAccountReader() {
-        List<Account> targetAccounts = accountHelperService.findAll();
+        List<Account> targetAccounts = accountRepository.findByUpdateAtBeforeAndStatus(
+                LocalDateTime.now().minusNanos(1),
+                AccountStatus.ACTIVE
+        );
         return new ListItemReader<>(targetAccounts);
     }
 
@@ -56,7 +59,7 @@ public class InactiveAccountJobConfig {
 
 
     public ItemWriter<Account> inactiveAccountWriter() {
-        return (List<? extends Account> users) -> accountHelperService.saveAll(users);
+        return accountRepository::saveAll;
     }
 
 

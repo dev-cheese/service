@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,18 +29,10 @@ public class AccountHelperService {
         return account.get();
     }
 
-    public List<Account> findAll() {
-        return accountRepository.findAll();
-    }
-
-
 
     public boolean isExistEmail(final Email email) {
         final Optional<Account> account = accountRepository.findByEmail(email);
         return account.isPresent();
     }
 
-    public List<Account> saveAll(List<? extends Account> accounts) {
-        return accountRepository.saveAll((Iterable<Account>) accounts);
-    }
 }

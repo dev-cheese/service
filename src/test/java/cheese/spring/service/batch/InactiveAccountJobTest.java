@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +33,11 @@ public class InactiveAccountJobTest {
     public void account_휴면회원으로_전화_테스트() throws Exception {
         final JobExecution jobExecution = jobLauncherTestUtils.launchJob();
         assertThat(BatchStatus.COMPLETED, is(jobExecution.getStatus()));
-        final List<Account> inactiveAccounts = accountRepository.findByStatusEquals(AccountStatus.ACTIVE);
+
+        final List<Account> inactiveAccounts = accountRepository.findByUpdateAtBeforeAndStatus(
+                LocalDateTime.now().minusNanos(1),
+                AccountStatus.ACTIVE
+        );
         assertThat(0, is(inactiveAccounts.size()));
     }
 }
