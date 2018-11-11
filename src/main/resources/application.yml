@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: mysql
+    active: local
 
   mail:
     host: smtp.gmail.com
@@ -26,7 +26,7 @@ logging:
 # local
 ---
 spring:
-  profiles: local
+  profiles: h2
   jpa:
     database: h2
     hibernate:
@@ -38,7 +38,7 @@ spring:
 # Local
 ---
 spring:
-  profiles: mysql
+  profiles: local
   jpa:
     database: mysql
     hibernate:
@@ -51,26 +51,3 @@ spring:
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-
-# init
-# 1. Batch 스키마 생성
----
-spring:
-  profiles: init
-  jpa:
-    database: mysql
-    hibernate:
-      ddl-auto: create
-    show-sql: true
-    properties:
-      hibernate.format_sql: true
-  datasource:
-    url: jdbc:mysql://localhost:3306/service?useSSL=false&serverTimezone=UTC
-    username: root
-    password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    platform: batch
-
-
-
