@@ -1,47 +1,36 @@
 package cheese.spring.service.config;
 
-import cheese.spring.service.account.event.AccountEventHandler;
-import cheese.spring.service.mail.MailSignUpSender;
 import lombok.Setter;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
-import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.aopalliance.aop.Advice;
 
 @Setter
 @Configuration
-@EnableRabbit
-public class RabbitMqConfig implements RabbitListenerConfigurer {
+public class RabbitMqConfig{
 
     public static final  String ROUTING_KEY = "routing";
     public static final String EXCHANGE_NAME = "appExchange";
-    public static final String QUEUE_GENERIC_NAME = "appGenericQueue";
-
-    @Autowired
-    private PlatformTransactionManager platformTransactionManager;
-
+    public static final String GENERIC_QUEUE = "generic.queue";
+    public static final String DEAD_LETTER_QUEUE = "dead.letter.queue";
 
     @Bean
-    public TopicExchange appExchange() {
-        return new TopicExchange(EXCHANGE_NAME);
+    public DirectExchange appExchange() {
+        return new DirectExchange(EXCHANGE_NAME);
     }
 
     @Bean
-    Queue queue(){ // rabitmq 등록
-        return new Queue(QUEUE_GENERIC_NAME, true);
+    Queue queue() {
+        return QueueBuilder.durable(GENERIC_QUEUE)
+                .autoDelete()
+                .withArgument("x-dead-letter-exchange", "")
+                .withArgument("x-dead-letter-routing-key", DEAD_LETTER_QUEUE)
+                .build();
     }
 
     @Bean
@@ -50,44 +39,31 @@ public class RabbitMqConfig implements RabbitListenerConfigurer {
     }
 
     @Bean
-    public ConnectionFactory rabbitConnectionFactory() {
-        CachingConnectionFactory connectionFactory =
-                new CachingConnectionFactory("localhost",5672);
-        connectionFactory.setUsername("guest");
-        connectionFactory.setPassword("guest");
-        return connectionFactory;
-    }
-
-
-    @Bean
-    public RabbitTemplate producerRabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(producerJackson2MessageConverter());
-        return rabbitTemplate;
-    }
-
-
-    //message convertor
-    @Bean
-    public Jackson2JsonMessageConverter producerJackson2MessageConverter() {
-        return new Jackson2JsonMessageConverter();
+    Queue deadLetterQueue() {
+        return QueueBuilder.durable(DEAD_LETTER_QUEUE).build();
     }
 
     @Bean
-    public MappingJackson2MessageConverter consumerJackson2MessageConverter() {
-        return new MappingJackson2MessageConverter();
-    }
-
-    @Bean
-    public DefaultMessageHandlerMethodFactory messageHandlerMethodFactory() {
-        DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
-        factory.setMessageConverter(consumerJackson2MessageConverter());
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setDefaultRequeueRejected(false);
+        factory.setMessageConverter(jackson2JsonMessageConverter());
+        factory.setAdviceChain(new Advice[] {
+                org.springframework.amqp.rabbit.config.RetryInterceptorBuilder
+                        .stateless()
+                        .maxAttempts(2).recoverer(new RejectAndDontRequeueRecoverer())
+                        .backOffOptions(1000, 2, 5000)
+                        .build()
+        });
         return factory;
     }
 
-    @Override
-    public void configureRabbitListeners(final RabbitListenerEndpointRegistrar registrar) {
-        registrar.setMessageHandlerMethodFactory(messageHandlerMethodFactory());
+    //message convertor
+    @Bean
+    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
+
 
 }

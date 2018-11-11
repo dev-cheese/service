@@ -1,10 +1,15 @@
 package cheese.spring.service.account.event;
 
 import cheese.spring.service.account.Account;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Getter
-public class SignUpEvent {
+@NoArgsConstructor
+public class SignUpEvent implements Serializable {
 
     private Account account;
 
