@@ -1,19 +1,6 @@
 spring:
   profiles:
-    active: local
-
-
-# Local
----
-spring:
-  profiles: local
-  jpa:
-    database: h2
-    hibernate:
-      ddl-auto: create
-    show-sql: true
-    properties:
-      hibernate.format_sql: true
+    active: mysql
 
   mail:
     host: smtp.gmail.com
@@ -27,11 +14,63 @@ spring:
           starttls:
             enable: true
 
-
-
 logging:
   level:
     ROOT: info
     org:
       hibernate:
         type: trace
+
+
+
+# local
+---
+spring:
+  profiles: local
+  jpa:
+    database: h2
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+
+# Local
+---
+spring:
+  profiles: mysql
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/service?useSSL=false&serverTimezone=UTC
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+# init
+# 1. Batch 스키마 생성
+---
+spring:
+  profiles: init
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/service?useSSL=false&serverTimezone=UTC
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    platform: batch
+
+
+
