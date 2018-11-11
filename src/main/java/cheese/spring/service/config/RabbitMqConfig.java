@@ -15,7 +15,7 @@ import org.aopalliance.aop.Advice;
 public class RabbitMqConfig{
 
     public static final  String ROUTING_KEY = "routing";
-    public static final String EXCHANGE_NAME = "appExchange";
+    public static final String EXCHANGE_NAME = "generic.exchange";
     public static final String GENERIC_QUEUE = "generic.queue";
     public static final String DEAD_LETTER_QUEUE = "dead.letter.queue";
 
