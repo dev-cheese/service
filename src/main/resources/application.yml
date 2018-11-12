@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: h2
 
   mail:
     host: smtp.gmail.com
