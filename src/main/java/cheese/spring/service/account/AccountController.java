@@ -1,11 +1,9 @@
 package cheese.spring.service.account;
 
 import cheese.spring.service.dto.SignUpDto;
+import cheese.spring.service.model.Email;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -16,7 +14,14 @@ public class AccountController {
 
     private final AccountSignUpService accountSignUpService;
 
-    @RequestMapping(method = RequestMethod.POST)
+    private final AccountHelperService accountHelperService;
+
+    @GetMapping("/{email}")
+    public Account getAccount(@Valid Email email) {
+        return accountHelperService.findByEmail(email);
+    }
+
+    @PostMapping
     public Account signUp(@Valid @RequestBody SignUpDto.Req dto) {
         return accountSignUpService.signUp(dto);
     }

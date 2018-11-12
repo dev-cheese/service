@@ -2,13 +2,13 @@ language: java
 jdk:
 - openjdk8
 
+before_install:
+- mvn clean
+- mysql -e 'CREATE DATABASE IF NOT EXISTS service;'
+
 install: true
 
 script: mvn install
-
-before_install:
-- mvn clean
-
 
 branches:
   only:

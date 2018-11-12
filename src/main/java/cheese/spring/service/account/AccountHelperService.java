@@ -23,6 +23,13 @@ public class AccountHelperService {
         return accountRepository.save(account);
     }
 
+
+    public Account findByEmail(Email email) {
+        final Optional<Account> account = accountRepository.findByEmail(email);
+        return account.get();
+    }
+
+
     public boolean isExistEmail(final Email email) {
         final Optional<Account> account = accountRepository.findByEmail(email);
         return account.isPresent();
